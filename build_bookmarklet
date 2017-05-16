@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo usage: $0 bookmarklet.coffee
+  exit
+fi
+
+coffee --version > /dev/null   || npm -g install coffee-script
+uglifyjs --version > /dev/null || npm -g install uglify-js
+
+# Install node + npm + coffescript + yuicompressor to compile
+# npm install -g uglify-js
+# npm install -g coffee-script
+
+# Compile CoffeeScript source
+#   -b = bare (without top level function)
+#   -p = output compiled source to stdout
+coffee -p $1 >> bookmarklet_source.js
+
+# Add javascript: prefix to make it a bookmarklet url
+# Save as a temp file
+echo -n "javascript:" > bookmarklet.js
+
+# Append the compiled javascript code to the temp file
+uglifyjs  --compress --mangle -- bookmarklet_source.js >> bookmarklet.js
+
+# Copy the bookmarklet code to clipboard
+cat bookmarklet.js | pbcopy
+
+# Remove temp file
+rm bookmarklet.js bookmarklet_source.js
+
+echo "Compiled \"$1\" bookmarklet source code to pasteboard"
