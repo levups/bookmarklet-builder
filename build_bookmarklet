@@ -5,6 +5,7 @@ if [ -z "$1" ]; then
   exit
 fi
 
+# Ensure coffeescript & UglifysJS are installed
 coffee --version > /dev/null   || npm -g install coffee-script
 uglifyjs --version > /dev/null || npm -g install uglify-js
 
